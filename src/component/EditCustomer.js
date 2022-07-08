@@ -1,11 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, TableCell, TableRow, TableBody} from '@mui/material';
 import  PopupDom from './PopupDom';
 import  PopupPostCode  from './PopupPostCode'
 import axios from 'axios';
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
+import useAsync from './useAsync/useAsync';
 
-const CreateCustomer = () => {
+const EditCustomer = () => {
+
+    const { no } = useParams();
+    async function getCustomer(){
+        const response = await axios.get(`http://localhost:3001/customers/${no}`)
+        return response.data;
+    }
+    const [formData, setFormData ] = useState({
+        name: "",
+        phone: "",
+        birth: "",
+        gender: "",
+        add1: "",
+        add2: "",
+    });
+    const [state] = useAsync(getCustomer,[]);
+    const {loading, error, data: customer} = state;
+
+    useEffect(()=>{
+        if(!customer) return;
+        setFormData({
+            name: customer.name,
+            phone: customer.phone,
+            birth: customer.birth,
+            gender: customer.gender,
+            add1: customer.add1,
+            add2: customer.add2,
+        })
+    },[customer])
     const navigate = useNavigate();
     //우편번호 관리하기
     const onAddData = (data) =>{
@@ -24,14 +53,7 @@ const CreateCustomer = () => {
     const closePostCode= ()=>{
         setIsPopupOpen(false);
     }
-    const [formData, setFormData ] = useState({
-        name: "",
-        phone: "",
-        birth: "",
-        gender: "",
-        add1: "",
-        add2: "",
-    });
+    
     const onChange = (e)=>{
         const { name, value } = e.target;
         setFormData({
@@ -54,11 +76,11 @@ const CreateCustomer = () => {
         
         //input에 값이 있는 지 체크하고 입력이 다 되어있으면 post 전송
         if(!formData.name || !formData.phone || !formData.birth || !formData.gender || !formData.add1 || !formData.add2) return alert("모든 필드를 입력해주세요");
-        insertCustomer();
+        UpdateCustomer();
         navigate('/');
     }
-    function insertCustomer(){
-        axios.post(`http://localhost:3001/addCustomers`,formData)
+    function UpdateCustomer(){
+        axios.put(`http://localhost:3001/updateCustomers/${no}`,formData)
             .then(result=>{
                 console.log(result);
             })
@@ -66,9 +88,12 @@ const CreateCustomer = () => {
                 console.log(e);
             })
     }
+    if(loading) return <div>로딩중...</div>
+    if(!customer) return null;
+    if(error) return <div>에러발생</div>;
     return (
         <div>
-            <h1>신규 고객 등록하기</h1>
+            <h1>고객 정보 수정하기</h1>
             <form name='customerUpload' onSubmit={onSubmit}>
                 <Table>
                     <TableBody>
@@ -93,8 +118,8 @@ const CreateCustomer = () => {
                         <TableRow>
                             <TableCell>성별</TableCell>
                             <TableCell>
-                                여성<input type="radio" name='gender' value="여성" onChange={onChange} />
-                                남성<input type="radio" name='gender' value="남성" onChange={onChange} />
+                                여성<input type="radio" name='gender' value="여성" onChange={onChange} checked={formData.gender === "여성" ? true: false} />
+                                남성<input type="radio" name='gender' value="남성" onChange={onChange} checked={formData.gender === "남성" ? true: false} />
                             </TableCell>
                         </TableRow>
                         <TableRow>
@@ -125,4 +150,4 @@ const CreateCustomer = () => {
     );
 };
 
-export default CreateCustomer;
+export default EditCustomer;

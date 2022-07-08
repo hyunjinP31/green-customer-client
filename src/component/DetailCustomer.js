@@ -2,7 +2,7 @@ import React from 'react';
 import { TableBody, TableCell, Table, TableRow } from '@mui/material';
 import axios from 'axios';
 import useAsync from './useAsync/useAsync';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Button } from 'antd';
 import 'antd/dist/antd.css';
 
@@ -19,11 +19,12 @@ const DetailCustomer = () => {
     if(loading) return <div>로딩중</div>;
     if(error) return <div>에러발생</div>;
     if(!data) return <div>로딩중</div>;
-    const customer = data[0];
+    const customer = data;
+    //삭제하기
     const customerDel = ()=>{
-        axios.delete(`http://localhost:3001/customers/${no}`)
+        axios.delete(`http://localhost:3001/delCustomers/${no}`)
         .then(result=>{
-            console.log(result);
+            console.log("삭제되었습니다.");
         })
         .catch(e=>{
             console.log(e);
@@ -55,9 +56,15 @@ const DetailCustomer = () => {
                         <TableCell>주소</TableCell>
                         <TableCell>{customer.add1+"  "+customer.add2}</TableCell>
                     </TableRow>
+                    <TableRow>
+                        <TableCell colSpan={2}>
+                            <Button onClick={customerDel}>삭제</Button>
+                            <Button><Link to={`/updateCustomers/${customer.no}`}>수정</Link></Button>
+                        </TableCell>
+                    </TableRow>
                 </TableBody>
             </Table>
-            <Button onClick={customerDel}>삭제</Button>
+            
         </div>
     );
 };

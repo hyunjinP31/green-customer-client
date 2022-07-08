@@ -9,8 +9,8 @@ const getCustomer = async ()=>{
     return response.data;
 }
 
-const CustomerList = ({ customers }) => {
-    const [state, refetch] = useAsync(getCustomer,[]);
+const CustomerList = () => {
+    const [state] = useAsync(getCustomer,[]);
     const { loading, error, data } = state;
     if(loading) return <div>로딩중...</div>;
     if(error) return <div>에러발생</div>;
