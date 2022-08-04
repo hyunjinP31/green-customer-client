@@ -1,7 +1,10 @@
-import React, {useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import SearchCustomer from './SearchCustomer';
-import styled, {css} from 'styled-components';
+import styled, { css } from 'styled-components';
+import { useSelector, useDispatch } from 'react-redux';
+import { getCookie, removeCookie } from '../util/cookie';
+import { setLogout } from '../modules/logincheck';
 
 const BlackBg = styled.div`
     width: 100vw;
@@ -54,9 +57,17 @@ const SearchInput = styled.input`
 `;
 
 
-const Header = ({isOn, setIsOn}) => {
-    const [ value, setValue ] = useState("");
-    function onChange(e){
+const Header = ({ isOn, setIsOn }) => {
+    const uname = getCookie('username');
+    const isLogin = useSelector(state => state.logincheck.isLogin);
+    const dispatch = useDispatch();
+    const logoutClick = () => {
+        removeCookie('username');
+        removeCookie('usermail');
+        dispatch(setLogout());
+    }
+    const [value, setValue] = useState("");
+    function onChange(e) {
         setValue(e.target.value);
     }
     const onClick = () => {
@@ -65,6 +76,7 @@ const Header = ({isOn, setIsOn}) => {
     const disable = () => {
         setIsOn(false);
     }
+    useEffect(()=>{},[isLogin])
     return (
         <div id="header">
             <h1><Link to="/">그린 고객센터</Link></h1>
@@ -72,6 +84,21 @@ const Header = ({isOn, setIsOn}) => {
                 <li><Link to="/">고객리스트 보기</Link></li>
                 <li><Link to="/write">신규 고객 등록하기</Link></li>
                 <li onClick={onClick}>고객 검색</li>
+                {
+                    isLogin &&
+                    <>
+                        <li>{uname}님</li>
+                        <li onClick={logoutClick}>로그아웃</li>
+                        <li><Link to="/join">회원정보수정</Link></li>
+                    </>
+                }
+                {
+                    isLogin ||
+                    <>
+                        <li><Link to="/login">로그인</Link></li>
+                        <li><Link to="/join">회원가입</Link></li>
+                    </>
+                }
                 {isOn && (
                     <>
                         <BlackBg onClick={disable}>
@@ -80,10 +107,10 @@ const Header = ({isOn, setIsOn}) => {
                             <Span1 onClick={disable} />
                             <Span2 onClick={disable} />
                             <form method=''></form>
-                                <SearchInput placeholder='찾을 값을 입력하세요' value={value} onChange={onChange}/>
+                            <SearchInput placeholder='찾을 값을 입력하세요' value={value} onChange={onChange} />
                         </WhiteBox>
                     </>
-                    ) }
+                )}
             </ul>
         </div>
     );
