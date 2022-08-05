@@ -1,0 +1,26 @@
+.imgDiv{
+    position: relative;
+    width: 150px;
+    height: 150px;
+}
+.imgbox {
+    width: 150px;
+    height: 150px;
+    background: darkolivegreen;
+}
+.imginput {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    z-index: 5;
+}
+.imgView {
+    width: 150px;
+    height: 150px;
+    position: absolute;
+    left: 0;
+    top: 0;
+}

@@ -90,6 +90,8 @@ const Header = ({ isOn, setIsOn }) => {
                         <li>{uname}님</li>
                         <li onClick={logoutClick}>로그아웃</li>
                         <li><Link to="/join">회원정보수정</Link></li>
+                        <li><Link to='gallery'>이미지 등록</Link></li>
+                        <li><Link to='/gallerylist'>이미지 보기</Link></li>
                     </>
                 }
                 {
@@ -97,6 +99,7 @@ const Header = ({ isOn, setIsOn }) => {
                     <>
                         <li><Link to="/login">로그인</Link></li>
                         <li><Link to="/join">회원가입</Link></li>
+                        <li><Link to='/gallerylist'>이미지 보기</Link></li>
                     </>
                 }
                 {isOn && (
